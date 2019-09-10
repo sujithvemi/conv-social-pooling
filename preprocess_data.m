@@ -156,7 +156,7 @@ for k = 1:6
     trajSet = trajTr(trajTr(:,1)==k,:);
     carIds = unique(trajSet(:,2));
     for l = 1:length(carIds)
-        vehtrack = trajSet(trajSet(:,2) ==carIds(l),3:5)';
+        vehtrack = trajSet(trajSet(:,2) ==carIds(l),3:5);
         tracksTr{k,carIds(l)} = vehtrack;
     end
 end
@@ -166,7 +166,7 @@ for k = 1:6
     trajSet = trajVal(trajVal(:,1)==k,:);
     carIds = unique(trajSet(:,2));
     for l = 1:length(carIds)
-        vehtrack = trajSet(trajSet(:,2) ==carIds(l),3:5)';
+        vehtrack = trajSet(trajSet(:,2) ==carIds(l),3:5);
         tracksVal{k,carIds(l)} = vehtrack;
     end
 end
@@ -176,7 +176,7 @@ for k = 1:6
     trajSet = trajTs(trajTs(:,1)==k,:);
     carIds = unique(trajSet(:,2));
     for l = 1:length(carIds)
-        vehtrack = trajSet(trajSet(:,2) ==carIds(l),3:5)';
+        vehtrack = trajSet(trajSet(:,2) ==carIds(l),3:5);
         tracksTs{k,carIds(l)} = vehtrack;
     end
 end
