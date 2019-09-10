@@ -46,9 +46,9 @@ def parse_fields(traj):
         #Find lateral maneuver
         ub = min(vehTraj.shape[0], ind+40)
         lb = max(0, ind-40)
-        if vehTraj.iloc[ub, 'lane_id'] > vehTraj.iloc[ind, 'lane_id'] | vehTraj.iloc[ind, 'lane_id'] > vehTraj.iloc[lb,'lane_id']:
+        if vehTraj.loc[ub, 'lane_id'] > vehTraj.loc[ind, 'lane_id'] | vehTraj.loc[ind, 'lane_id'] > vehTraj.loc[lb,'lane_id']:
             traj.loc[k, 'lat_man'] = 3
-        elif vehTraj.iloc[ub, 'lane_id'] < vehTraj.iloc[ind, 'lane_id'] | vehTraj.iloc[ind, 'lane_id'] < vehTraj.iloc[lb,'lane_id']:
+        elif vehTraj.loc[ub, 'lane_id'] < vehTraj.loc[ind, 'lane_id'] | vehTraj.loc[ind, 'lane_id'] < vehTraj.loc[lb,'lane_id']:
             traj.loc[k, 'lat_man'] = 2
         else:
             traj.loc[k, 'lat_man'] = 1
