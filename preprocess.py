@@ -46,9 +46,9 @@ def parse_fields(traj):
         #Find lateral maneuver
         ub = min(vehTraj.shape[0], ind+40)
         lb = max(0, ind-40)
-        if vehTraj.loc[ub, 'lane_id'] > vehTraj.loc[ind, 'lane_id'] | vehTraj.loc[ind, 'lane_id'] > vehTraj.loc[lb,'lane_id']:
+        if vehTraj.loc[ub, 'lane_id'] > vehTraj.loc[ind, 'lane_id'] or vehTraj.loc[ind, 'lane_id'] > vehTraj.loc[lb,'lane_id']:
             traj.loc[k, 'lat_man'] = 3
-        elif vehTraj.loc[ub, 'lane_id'] < vehTraj.loc[ind, 'lane_id'] | vehTraj.loc[ind, 'lane_id'] < vehTraj.loc[lb,'lane_id']:
+        elif vehTraj.loc[ub, 'lane_id'] < vehTraj.loc[ind, 'lane_id'] or vehTraj.loc[ind, 'lane_id'] < vehTraj.loc[lb,'lane_id']:
             traj.loc[k, 'lat_man'] = 2
         else:
             traj.loc[k, 'lat_man'] = 1
@@ -56,7 +56,7 @@ def parse_fields(traj):
         #Find longitudinal maneuver
         ub = min(vehTraj.shape[0], ind+50)
         lb = max(1, ind-30)
-        if ub == ind | lb == ind:
+        if ub == ind or lb == ind:
             traj.loc[k, 'long_man'] = 1
         else:
             v_hist = (vehTraj.loc[ind, 'local_y'] - vehTraj.loc[lb, 'local_y'])/(ind-lb)
@@ -70,7 +70,7 @@ def parse_fields(traj):
         frameL = traj.loc[(traj.loc[:, 'dsID'] == dsID) & (traj.loc[:, 'frameNum'] == time) & (traj.loc[:, 'lane_id'] == lane-1), :]
         frameR = traj.loc[(traj.loc[:, 'dsID'] == dsID) & (traj.loc[:, 'frameNum'] == time) & (traj.loc[:, 'lane_id'] == lane+1), :]
         
-        if frameL:
+        if not frameL.empty:
             for l in range(frameL.shape[0]):
                 y = frameL.loc[l, 'local_y'] - traj.loc[k, 'local_y']
                 if abs(y) < 90:
@@ -81,7 +81,7 @@ def parse_fields(traj):
             if abs(y) < 90 & y != 0:
                 gridInd = 14+round((y+90)/15)
                 grid.loc[k, str(gridInd)] = frameEgo.loc[l, 'vehID']
-        if frameR:
+        if not frameR.empty:
             for l in range(frameR.shape[0]):
                 y = frameR.loc[l, 'local_y'] - traj.loc[k, 'local_y']
                 if abs(y) < 90:
