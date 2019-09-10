@@ -40,7 +40,7 @@ def parse_fields(traj):
         time = traj.iloc[k, 2]
         dsID = traj.iloc[k, 0]
         vehID = traj.iloc[k, 1]
-        vehTraj = traj.iloc[(traj.iloc[:, 0] == dsID) & (traj.iloc[:, 1] == vehID), :]
+        vehTraj = traj.loc[(traj.iloc[:, 0] == dsID) & (traj.iloc[:, 1] == vehID), :]
         ind = vehTraj[vehTraj[2] == time].iloc[0,:].name
         lane = traj.iloc[k, 5]
 
@@ -67,28 +67,28 @@ def parse_fields(traj):
             else:
                 traj.loc[k, 'long_man'] = 1
 
-        frameEgo = traj.iloc[(traj.iloc[:, 0] == dsID) & (traj.iloc[:, 2] == time) & (traj.iloc[:, 5] == lane), :]
+        frameEgo = traj.loc[(traj.iloc[:, 0] == dsID) & (traj.iloc[:, 2] == time) & (traj.iloc[:, 5] == lane), :]
         # print(frameEgo)
-        frameL = traj.iloc[(traj.iloc[:, 0] == dsID) & (traj.iloc[:, 2] == time) & (traj.iloc[:, 5] == lane-1), :]
-        frameR = traj.iloc[(traj.iloc[:, 0] == dsID) & (traj.iloc[:, 2] == time) & (traj.iloc[:, 5] == lane+1), :]
+        frameL = traj.loc[(traj.iloc[:, 0] == dsID) & (traj.iloc[:, 2] == time) & (traj.iloc[:, 5] == lane-1), :]
+        frameR = traj.loc[(traj.iloc[:, 0] == dsID) & (traj.iloc[:, 2] == time) & (traj.iloc[:, 5] == lane+1), :]
         
         if not frameL.empty:
             for l in range(frameL.shape[0]):
                 y = frameL.iloc[l, 4] - traj.iloc[k, 4]
                 if abs(y) < 90:
                     gridInd = 1+round((y+90)/15)
-                    grid.iloc[k, str(gridInd)] = frameL.iloc[l, 1]
+                    grid.loc[k, str(gridInd)] = frameL.iloc[l, 1]
         for l in range(frameEgo.shape[0]):
             y = frameEgo.iloc[l, 4] - traj.iloc[k, 4]
             if abs(y) < 90 and y != 0:
                 gridInd = 14+round((y+90)/15)
-                grid.iloc[k, str(gridInd)] = frameEgo.iloc[l, 1]
+                grid.loc[k, str(gridInd)] = frameEgo.iloc[l, 1]
         if not frameR.empty:
             for l in range(frameR.shape[0]):
                 y = frameR.iloc[l, 4] - traj.iloc[k, 4]
                 if abs(y) < 90:
                     gridInd = 27+round((y+90)/15)
-                    grid.iloc[k, str(gridInd)] = frameR.iloc[l, 1]
+                    grid.loc[k, str(gridInd)] = frameR.iloc[l, 1]
     return pd.concat([traj, grid], axis=1)
 
 
@@ -104,26 +104,26 @@ trajVal = pd.DataFrame(columns=trajAll.columns)
 trajTest = pd.DataFrame(columns=trajAll.columns)
 
 for i in range(1, 7):
-    ul1 = round(0.7*trajAll.iloc[trajAll.iloc[:, 0] == i, 1].max())
-    ul2 = round(0.8*trajAll.iloc[trajAll.iloc[:, 0] == i, 1].max())
+    ul1 = round(0.7*trajAll.loc[trajAll.iloc[:, 0] == i, 1].max())
+    ul2 = round(0.8*trajAll.loc[trajAll.iloc[:, 0] == i, 1].max())
 
-    trajTr = pd.concat([trajTr, trajAll.iloc[(trajAll.iloc[:, 0] == i) & (trajAll.iloc[:, 1] <= ul1), :]], axis=0, ignore_index=True)
-    trajVal = pd.concat([trajVal, trajAll.iloc[(trajAll.iloc[:, 0] == i) & (trajAll.iloc[:, 1] > ul1) & (trajAll.iloc[:, 1] <= ul2), :]], axis=0, ignore_index=True)
-    trajTest = pd.concat([trajTr, trajAll.iloc[(trajAll.iloc[:, 0] == i) & (trajAll.iloc[:, 1] > ul2), :]], axis=0, ignore_index=True)
+    trajTr = pd.concat([trajTr, trajAll.loc[(trajAll.iloc[:, 0] == i) & (trajAll.iloc[:, 1] <= ul1), :]], axis=0, ignore_index=True)
+    trajVal = pd.concat([trajVal, trajAll.loc[(trajAll.iloc[:, 0] == i) & (trajAll.iloc[:, 1] > ul1) & (trajAll.iloc[:, 1] <= ul2), :]], axis=0, ignore_index=True)
+    trajTest = pd.concat([trajTr, trajAll.loc[(trajAll.iloc[:, 0] == i) & (trajAll.iloc[:, 1] > ul2), :]], axis=0, ignore_index=True)
 
 
 for i in range(1, 7):
-    trajSet = trajTr.iloc[trajTr.iloc[:, 0] == i, :]
+    trajSet = trajTr.loc[trajTr.iloc[:, 0] == i, :]
     carIds = list(trajSet.iloc[:, 1].unique())
-    tracksTr = {(i, carIds[j]):trajSet.iloc[trajSet.iloc[:, 1] == carIds[j], [2, 3, 4]].to_numpy() for j in carIds}
+    tracksTr = {(i, carIds[j]):trajSet.loc[trajSet.iloc[:, 1] == carIds[j], [2, 3, 4]].to_numpy() for j in carIds}
 
-    trajSet = trajVal.iloc[trajVal.iloc[:, 0] == i, :]
+    trajSet = trajVal.loc[trajVal.iloc[:, 0] == i, :]
     carIds = list(trajSet.iloc[:, 1].unique())
-    tracksVal = {(i, carIds[j]):trajSet.iloc[trajSet.iloc[:, 1] == carIds[j], [2, 3, 4]].to_numpy() for j in carIds}
+    tracksVal = {(i, carIds[j]):trajSet.loc[trajSet.iloc[:, 1] == carIds[j], [2, 3, 4]].to_numpy() for j in carIds}
 
-    trajSet = trajTest.iloc[trajTest.iloc[:, 0] == i, :]
+    trajSet = trajTest.loc[trajTest.iloc[:, 0] == i, :]
     carIds = list(trajSet.iloc[:, 1].unique())
-    tracksTest = {(i, carIds[j]):trajSet.iloc[trajSet.iloc[:, 1] == carIds[j], [2, 3, 4]].to_numpy() for j in carIds}
+    tracksTest = {(i, carIds[j]):trajSet.loc[trajSet.iloc[:, 1] == carIds[j], [2, 3, 4]].to_numpy() for j in carIds}
 
 trajTr['keep'] = np.zeros(trajTr.shape[0], dtype=np.bool)
 trajTr.loc[:, 'keep'] = trajTr.apply(lambda x: 1 if (tracksTr[(x[0], x[1])][0, 30] <= x[2]) & (tracksTr[(x[0], x[1])][0, -1] > x[2]) else 0, axis=1)
