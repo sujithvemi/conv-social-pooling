@@ -4,19 +4,19 @@ import multiprocessing as mp
 from scipy.io import savemat
 from tqdm import tqdm
 
-us101_1 = '/home/sujith/Documents/Projects/ADS/prediction/datasets/NGSIM/us101/0750am-0805am/trajectories-0750am-0805am.txt'
-us101_2 = '/home/sujith/Documents/Projects/ADS/prediction/datasets/NGSIM/us101/0805am-0820am/trajectories-0805am-0820am.txt'
-us101_3 = '/home/sujith/Documents/Projects/ADS/prediction/datasets/NGSIM/us101/0820am-0835am/trajectories-0820am-0835am.txt'
-i80_1 = '/home/sujith/Documents/Projects/ADS/prediction/datasets/NGSIM/i80/0400pm-0415pm/trajectories-0400-0415.txt'
-i80_2 = '/home/sujith/Documents/Projects/ADS/prediction/datasets/NGSIM/i80/0500pm-0515pm/trajectories-0500-0515.txt'
-i80_3 = '/home/sujith/Documents/Projects/ADS/prediction/datasets/NGSIM/i80/0515pm-0530pm/trajectories-0515-0530.txt'
+# us101_1 = '/home/sujith/Documents/Projects/ADS/prediction/datasets/NGSIM/us101/0750am-0805am/trajectories-0750am-0805am.txt'
+# us101_2 = '/home/sujith/Documents/Projects/ADS/prediction/datasets/NGSIM/us101/0805am-0820am/trajectories-0805am-0820am.txt'
+# us101_3 = '/home/sujith/Documents/Projects/ADS/prediction/datasets/NGSIM/us101/0820am-0835am/trajectories-0820am-0835am.txt'
+# i80_1 = '/home/sujith/Documents/Projects/ADS/prediction/datasets/NGSIM/i80/0400pm-0415pm/trajectories-0400-0415.txt'
+# i80_2 = '/home/sujith/Documents/Projects/ADS/prediction/datasets/NGSIM/i80/0500pm-0515pm/trajectories-0500-0515.txt'
+# i80_3 = '/home/sujith/Documents/Projects/ADS/prediction/datasets/NGSIM/i80/0515pm-0530pm/trajectories-0515-0530.txt'
 
-# us101_1 = '/home/sujith/Documents/prediction/datasets/NGSIM/us101/i101_trajectories-0750am-0805am.txt'
-# us101_2 = '/home/sujith/Documents/prediction/datasets/NGSIM/us101/i101_trajectories-0805am-0820am.txt'
-# us101_3 = '/home/sujith/Documents/prediction/datasets/NGSIM/us101/i101_trajectories-0820am-0835am.txt'
-# i80_1 = '/home/sujith/Documents/prediction/datasets/NGSIM/i80/i80_trajectories-0400-0415.txt'
-# i80_2 = '/home/sujith/Documents/prediction/datasets/NGSIM/i80/i80_trajectories-0500-0515.txt'
-# i80_3 = '/home/sujith/Documents/prediction/datasets/NGSIM/i80/i80_trajectories-0515-0530.txt'
+us101_1 = '/home/sujith/Documents/prediction/datasets/NGSIM/us101/i101_trajectories-0750am-0805am.txt'
+us101_2 = '/home/sujith/Documents/prediction/datasets/NGSIM/us101/i101_trajectories-0805am-0820am.txt'
+us101_3 = '/home/sujith/Documents/prediction/datasets/NGSIM/us101/i101_trajectories-0820am-0835am.txt'
+i80_1 = '/home/sujith/Documents/prediction/datasets/NGSIM/i80/i80_trajectories-0400-0415.txt'
+i80_2 = '/home/sujith/Documents/prediction/datasets/NGSIM/i80/i80_trajectories-0500-0515.txt'
+i80_3 = '/home/sujith/Documents/prediction/datasets/NGSIM/i80/i80_trajectories-0515-0530.txt'
 
 files = [us101_1, us101_2, us101_3, i80_1, i80_2, i80_3]
 
@@ -43,12 +43,16 @@ def parse_fields(traj):
         dsID = traj.iloc[k, 0]
         vehID = traj.iloc[k, 1]
         vehTraj = traj.loc[(traj.iloc[:, 0] == dsID) & (traj.iloc[:, 1] == vehID), :]
+        vehTraj = vehTraj.reset_index(drop=True)
+        print('vehTraj')
+        print(vehTraj)
         ind = vehTraj[vehTraj.iloc[:, 2] == time].iloc[0,:].name
         lane = traj.iloc[k, 5]
 
         #Find lateral maneuver
         ub = min(vehTraj.shape[0]-1, ind+40)
         lb = max(0, ind-40)
+        print(ind, ub, lb)
         if vehTraj.iloc[ub, 5] > vehTraj.iloc[ind, 5] or vehTraj.iloc[ind, 5] > vehTraj.iloc[lb,5]:
             traj.loc[k, 'lat_man'] = 3
         elif vehTraj.iloc[ub, 5] < vehTraj.iloc[ind, 5] or vehTraj.iloc[ind, 5] < vehTraj.iloc[lb,5]:
